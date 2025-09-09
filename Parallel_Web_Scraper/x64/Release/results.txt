@@ -1,0 +1,14 @@
+Parallel Web Scraper Results
+============================
+Pages downloaded: 20
+Unique URLs (visited): 20
+Elapsed time (s): 3.86323
+Throughput (pages/sec): 5.17701 pages/s
+
+Analysis summary (aggregated):
+Total books found (aggregate count): 400
+Number of 5-star books: 77
+Average price: 34.9598
+Books with price greater than 50 pounds: 79
+Books containing 'Poem' keyword: 6
+Most expensive book: The Diary of a Young Girl (£59.9)

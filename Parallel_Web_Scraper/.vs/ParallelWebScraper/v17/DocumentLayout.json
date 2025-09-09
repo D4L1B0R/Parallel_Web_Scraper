@@ -1,0 +1,109 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\dalen\\Desktop\\S4\\Paralelno programiranje\\Projekat\\Parallel_Web_Scraper\\Parallel_Web_Scraper\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{49E45256-DFE9-4177-A09A-FB0C829FAD9F}|Parallel_Web_Scraper.vcxproj|C:\\Users\\dalen\\Desktop\\S4\\Paralelno programiranje\\Projekat\\Parallel_Web_Scraper\\Parallel_Web_Scraper\\Analyzer.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{49E45256-DFE9-4177-A09A-FB0C829FAD9F}|Parallel_Web_Scraper.vcxproj|solutionrelative:Analyzer.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{49E45256-DFE9-4177-A09A-FB0C829FAD9F}|Parallel_Web_Scraper.vcxproj|C:\\Users\\dalen\\Desktop\\S4\\Paralelno programiranje\\Projekat\\Parallel_Web_Scraper\\Parallel_Web_Scraper\\Downloader.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{49E45256-DFE9-4177-A09A-FB0C829FAD9F}|Parallel_Web_Scraper.vcxproj|solutionrelative:Downloader.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{49E45256-DFE9-4177-A09A-FB0C829FAD9F}|Parallel_Web_Scraper.vcxproj|C:\\Users\\dalen\\Desktop\\S4\\Paralelno programiranje\\Projekat\\Parallel_Web_Scraper\\Parallel_Web_Scraper\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{49E45256-DFE9-4177-A09A-FB0C829FAD9F}|Parallel_Web_Scraper.vcxproj|solutionrelative:main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{49E45256-DFE9-4177-A09A-FB0C829FAD9F}|Parallel_Web_Scraper.vcxproj|C:\\Users\\dalen\\Desktop\\S4\\Paralelno programiranje\\Projekat\\Parallel_Web_Scraper\\Parallel_Web_Scraper\\Storage.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{49E45256-DFE9-4177-A09A-FB0C829FAD9F}|Parallel_Web_Scraper.vcxproj|solutionrelative:Storage.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{49E45256-DFE9-4177-A09A-FB0C829FAD9F}|Parallel_Web_Scraper.vcxproj|C:\\Users\\dalen\\Desktop\\S4\\Paralelno programiranje\\Projekat\\Parallel_Web_Scraper\\Parallel_Web_Scraper\\UrlManager.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{49E45256-DFE9-4177-A09A-FB0C829FAD9F}|Parallel_Web_Scraper.vcxproj|solutionrelative:UrlManager.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 4,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "UrlManager.cpp",
+              "DocumentMoniker": "C:\\Users\\dalen\\Desktop\\S4\\Paralelno programiranje\\Projekat\\Parallel_Web_Scraper\\Parallel_Web_Scraper\\UrlManager.cpp",
+              "RelativeDocumentMoniker": "UrlManager.cpp",
+              "ToolTip": "C:\\Users\\dalen\\Desktop\\S4\\Paralelno programiranje\\Projekat\\Parallel_Web_Scraper\\Parallel_Web_Scraper\\UrlManager.cpp",
+              "RelativeToolTip": "UrlManager.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-09-09T15:58:42.465Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Storage.cpp",
+              "DocumentMoniker": "C:\\Users\\dalen\\Desktop\\S4\\Paralelno programiranje\\Projekat\\Parallel_Web_Scraper\\Parallel_Web_Scraper\\Storage.cpp",
+              "RelativeDocumentMoniker": "Storage.cpp",
+              "ToolTip": "C:\\Users\\dalen\\Desktop\\S4\\Paralelno programiranje\\Projekat\\Parallel_Web_Scraper\\Parallel_Web_Scraper\\Storage.cpp",
+              "RelativeToolTip": "Storage.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-09-09T15:58:36.314Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Downloader.cpp",
+              "DocumentMoniker": "C:\\Users\\dalen\\Desktop\\S4\\Paralelno programiranje\\Projekat\\Parallel_Web_Scraper\\Parallel_Web_Scraper\\Downloader.cpp",
+              "RelativeDocumentMoniker": "Downloader.cpp",
+              "ToolTip": "C:\\Users\\dalen\\Desktop\\S4\\Paralelno programiranje\\Projekat\\Parallel_Web_Scraper\\Parallel_Web_Scraper\\Downloader.cpp",
+              "RelativeToolTip": "Downloader.cpp",
+              "ViewState": "AgIAABsAAAAAAAAAAAAAADsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-09-09T15:58:18.623Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Analyzer.cpp",
+              "DocumentMoniker": "C:\\Users\\dalen\\Desktop\\S4\\Paralelno programiranje\\Projekat\\Parallel_Web_Scraper\\Parallel_Web_Scraper\\Analyzer.cpp",
+              "RelativeDocumentMoniker": "Analyzer.cpp",
+              "ToolTip": "C:\\Users\\dalen\\Desktop\\S4\\Paralelno programiranje\\Projekat\\Parallel_Web_Scraper\\Parallel_Web_Scraper\\Analyzer.cpp",
+              "RelativeToolTip": "Analyzer.cpp",
+              "ViewState": "AgIAAFYAAAAAAAAAAAAAAHQAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-09-09T15:58:05.763Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "main.cpp",
+              "DocumentMoniker": "C:\\Users\\dalen\\Desktop\\S4\\Paralelno programiranje\\Projekat\\Parallel_Web_Scraper\\Parallel_Web_Scraper\\main.cpp",
+              "RelativeDocumentMoniker": "main.cpp",
+              "ToolTip": "C:\\Users\\dalen\\Desktop\\S4\\Paralelno programiranje\\Projekat\\Parallel_Web_Scraper\\Parallel_Web_Scraper\\main.cpp",
+              "RelativeToolTip": "main.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-09-09T13:54:02.404Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
