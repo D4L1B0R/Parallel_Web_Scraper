@@ -141,12 +141,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Analyzer.hpp" />
+    <ClInclude Include="Common.hpp" />
     <ClInclude Include="Downloader.hpp" />
     <ClInclude Include="Storage.hpp" />
     <ClInclude Include="UrlManager.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="input_examples.txt" />
     <Text Include="results.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="books.csv" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

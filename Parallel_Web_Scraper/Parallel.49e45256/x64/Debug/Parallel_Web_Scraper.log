@@ -1,4 +1,0 @@
-﻿C:\Users\dalen\Desktop\S4\Paralelno programiranje\Projekat\Parallel_Web_Scraper\Parallel_Web_Scraper\Downloader.cpp(2,10): : error : 'curl/curl.h' file not found
-      2 | #include <curl/curl.h>
-        |          ^~~~~~~~~~~~~
-  1 error generated.

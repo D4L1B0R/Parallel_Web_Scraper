@@ -7,7 +7,6 @@
 
 Downloader::Downloader(int timeout_seconds, int max_retries)
     : timeoutSec(timeout_seconds), maxRetries(max_retries) {
-    curl_global_init(CURL_GLOBAL_DEFAULT);
 }
 
 static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {

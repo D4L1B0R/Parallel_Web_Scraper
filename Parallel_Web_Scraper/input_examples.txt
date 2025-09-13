@@ -1,0 +1,10 @@
+https://books.toscrape.com/catalogue/page-2.html
+https://books.toscrape.com/catalogue/page-5.html
+https://books.toscrape.com/catalogue/page-9.html
+https://books.toscrape.com/catalogue/page-13.html
+https://books.toscrape.com/catalogue/page-17.html
+https://books.toscrape.com/catalogue/page-21.html
+https://books.toscrape.com/catalogue/page-26.html
+https://books.toscrape.com/catalogue/page-31.html
+https://books.toscrape.com/catalogue/page-37.html
+https://books.toscrape.com/catalogue/page-44.html

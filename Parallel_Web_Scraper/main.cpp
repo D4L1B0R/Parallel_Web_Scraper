@@ -1,17 +1,178 @@
-﻿#include "UrlManager.hpp"
-#include "Downloader.hpp"
+﻿#include "Downloader.hpp"
 #include "Analyzer.hpp"
 #include "Storage.hpp"
-#include <tbb/task_group.h>
+#include "UrlManager.hpp"
+#include "Common.hpp"
+
+#include <tbb/tbb.h>
+#include <tbb/parallel_pipeline.h>
+#include <tbb/global_control.h>
+
+#include <curl/curl.h>
 #include <iostream>
 #include <fstream>
 #include <chrono>
-#include <string>
+#include <atomic>
+#include <memory>
 
+// ------------------ Result helper -------------------
+struct Result {
+    int pages;
+    double seconds;
+    double throughput;
+    AnalysisResult result;
+};
+
+// ------------------ Serial run -------------------
+Result runSerial(const std::vector<std::string>& urls,
+    Downloader& downloader,
+    Analyzer& analyzer,
+    Storage& storage,
+    std::ostream& out) {
+    auto start = std::chrono::steady_clock::now();
+
+    for (const auto& url : urls) {
+        try {
+            std::string html = downloader.downloadPage(url);
+            if (html.empty()) {
+                std::cerr << "[serial] Failed to download: " << url << "\n";
+                continue;
+            }
+            else {
+                std::cout << "[serial] Downloaded " << url
+                    << " (length=" << html.size() << ")\n";
+            }
+            auto pr = analyzer.parsePageRecords(html);
+            storage.storeResult(pr.second);
+            storage.storeRecords(pr.first);
+            storage.incrementPagesProcessed();
+        }
+        catch (const std::exception& ex) {
+            std::cerr << "[serial] Exception: " << ex.what()
+                << " for " << url << "\n";
+        }
+    }
+
+    auto end = std::chrono::steady_clock::now();
+    double seconds = std::chrono::duration<double>(end - start).count();
+    int pages = storage.pagesProcessed();
+    AnalysisResult total = storage.getAggregatedResult();
+    double avgPrice = (total.bookCount ? total.totalPrice / total.bookCount : 0.0);
+    double throughput = (seconds > 0.0 ? pages / seconds : pages);
+
+    out << "\nSerial Web Scraper Results\n";
+    out << "==========================\n";
+    out << "Pages downloaded: " << pages << "\n";
+    out << "Unique URLs (visited): " << urls.size() << "\n";
+    out << "Elapsed time (s): " << seconds << "\n";
+    out << "Throughput (pages/sec): " << throughput << " pages/s\n\n";
+    out << "Analysis summary (aggregated):\n";
+    out << "Total books found (aggregate count): " << total.bookCount << "\n";
+    out << "Number of 5-star books: " << total.fiveStarBooks << "\n";
+    out << "Average price: " << avgPrice << "\n";
+    out << "Books with price greater than 50 pounds: " << total.priceOver50 << "\n";
+    out << "Books containing 'Poem' keyword: " << total.containsPoem << "\n";
+    out << "Most expensive book: " << total.maxPriceTitle
+        << " (£" << total.maxPrice << ")\n";
+
+    return { pages, seconds, throughput, total };
+}
+
+// ------------------ Parallel pipeline run -------------------
+Result runPipeline(const std::vector<std::string>& urls,
+    Downloader& downloader,
+    Analyzer& analyzer,
+    Storage& storage,
+    std::ostream& out) {
+    auto start = std::chrono::steady_clock::now();
+
+    const size_t maxTokens = 8;
+    tbb::parallel_pipeline(
+        maxTokens,
+        tbb::make_filter<void, std::string>(
+            tbb::filter_mode::serial_in_order,
+            [&urls](tbb::flow_control& fc) -> std::string {
+                static size_t idx = 0;
+                if (idx >= urls.size()) {
+                    fc.stop();
+                    return std::string();
+                }
+                return urls[idx++];
+            })
+        &
+        tbb::make_filter<std::string, std::string>(
+            tbb::filter_mode::parallel,
+            [&downloader](const std::string& url) -> std::string {
+                std::string page = downloader.downloadPage(url);
+                if (page.empty()) {
+                    std::cerr << "[pipeline] Failed to download: " << url << "\n";
+                }
+                else {
+                    std::cout << "[pipeline] Downloaded " << url
+                        << " (length=" << page.size() << ")\n";
+                }
+                return page;
+            })
+        &
+        tbb::make_filter<std::string, std::pair<std::vector<BookRecord>, AnalysisResult>>(
+            tbb::filter_mode::parallel,
+            [&analyzer](const std::string& page) {
+                if (page.empty()) return std::pair<std::vector<BookRecord>, AnalysisResult>{};
+                return analyzer.parsePageRecords(page);
+            })
+        &
+        tbb::make_filter<std::pair<std::vector<BookRecord>, AnalysisResult>, void>(
+            tbb::filter_mode::parallel,
+            [&storage](const std::pair<std::vector<BookRecord>, AnalysisResult>& pr) {
+                if (pr.first.empty() && pr.second.bookCount == 0) return;
+                storage.storeRecords(pr.first);
+                storage.storeResult(pr.second);
+                storage.incrementPagesProcessed();
+            })
+    );
+
+    auto end = std::chrono::steady_clock::now();
+    double seconds = std::chrono::duration<double>(end - start).count();
+    int pages = storage.pagesProcessed();
+    AnalysisResult total = storage.getAggregatedResult();
+    double avgPrice = (total.bookCount ? total.totalPrice / total.bookCount : 0.0);
+    double throughput = (seconds > 0.0 ? pages / seconds : pages);
+
+    out << "Parallel Pipeline Results\n";
+    out << "============================\n";
+    out << "Pages downloaded: " << pages << "\n";
+    out << "Unique URLs (visited): " << urls.size() << "\n";
+    out << "Elapsed time (s): " << seconds << "\n";
+    out << "Throughput (pages/sec): " << throughput << " pages/s\n\n";
+    out << "Analysis summary (aggregated):\n";
+    out << "Total books found (aggregate count): " << total.bookCount << "\n";
+    out << "Number of 5-star books: " << total.fiveStarBooks << "\n";
+    out << "Average price: " << avgPrice << "\n";
+    out << "Books with price greater than 50 pounds: " << total.priceOver50 << "\n";
+    out << "Books containing 'Poem' keyword: " << total.containsPoem << "\n";
+    out << "Most expensive book: " << total.maxPriceTitle
+        << " (£" << total.maxPrice << ")\n";
+
+    return { pages, seconds, throughput, total };
+}
+
+// ------------------ Main -------------------
 int main(int argc, char** argv) {
-    UrlManager urlManager;
+    curl_global_init(CURL_GLOBAL_DEFAULT);
 
-    // 1) Load initial URLs
+    int threads = 0;
+    bool doCrawl = false;
+    for (int i = 1; i < argc; ++i) {
+        std::string a(argv[i]);
+        if ((a == "-t" || a == "--threads") && i + 1 < argc) {
+            threads = std::stoi(argv[++i]);
+        }
+        else if (a == "--crawl") {
+            doCrawl = true;
+        }
+    }
+
+    UrlManager urlManager;
     size_t loaded = urlManager.loadFromFile("urls.txt");
     if (loaded == 0) {
         std::cout << "No urls.txt or file empty. You can enter URLs manually.\n";
@@ -22,66 +183,65 @@ int main(int argc, char** argv) {
     Analyzer analyzer;
     Storage storage;
 
-    auto urls = urlManager.getUrlsSnapshot(); // snapshot svih URL-ova
-
-    auto start = std::chrono::steady_clock::now();
-
-    tbb::task_group tg;
-    for (auto url : urls) { // **capture by value!**
-        tg.run([url, &downloader, &analyzer, &storage]() {
-            try {
-                std::string html = downloader.downloadPage(url);
-                if (html.empty()) {
-                    std::cerr << "[main] Failed to download: " << url << "\n";
-                    return;
-                }
-                else {
-                    std::cout << "[main] Downloaded " << url
-                        << " (length=" << html.size() << ")\n";
-                }
-
-                AnalysisResult r = analyzer.analyzePage(html);
-                storage.storeResult(r);
-                storage.incrementPagesProcessed();
-            }
-            catch (const std::exception& ex) {
-                std::cerr << "[main] Exception: " << ex.what() << " for " << url << "\n";
-            }
-            });
+    if (doCrawl) {
+        std::cout << "[main] Crawling index page...\n";
+        std::string indexHtml = downloader.downloadPage("https://books.toscrape.com/index.html");
+        if (!indexHtml.empty()) {
+            auto pages = urlManager.crawlIndex(indexHtml, "https://books.toscrape.com");
+            for (auto& p : pages) urlManager.addUrl(p);
+            std::cout << "[main] Crawl found " << pages.size() << " catalogue pages.\n";
+        }
     }
-    tg.wait();
 
-    auto end = std::chrono::steady_clock::now();
-    std::chrono::duration<double> elapsed = end - start;
-    double seconds = elapsed.count();
-    int pages = storage.pagesProcessed();
-    AnalysisResult total = storage.getAggregatedResult();
-    int uniqueUrls = static_cast<int>(urls.size());
+    auto urls = urlManager.getUrlsSnapshot();
+    if (urls.empty()) {
+        std::cerr << "No URLs to process.\n";
+        return 1;
+    }
 
-    double avgPrice = (total.bookCount ? total.totalPrice / total.bookCount : 0.0);
-    double throughput = (seconds > 0.0 ? pages / seconds : pages);
+    std::unique_ptr<tbb::global_control> gc;
+    if (threads > 0) {
+        gc.reset(new tbb::global_control(tbb::global_control::max_allowed_parallelism, threads));
+        std::cout << "[main] Using " << threads << " threads.\n";
+    }
 
     std::ofstream out("results.txt");
-    out << "Parallel Web Scraper Results\n";
-    out << "============================\n";
-    out << "Pages downloaded: " << pages << "\n";
-    out << "Unique URLs (visited): " << uniqueUrls << "\n";
-    out << "Elapsed time (s): " << seconds << "\n";
-    out << "Throughput (pages/sec): " << throughput << " pages/s\n\n";
 
-    out << "Analysis summary (aggregated):\n";
-    out << "Total books found (aggregate count): " << total.bookCount << "\n";
-    out << "Number of 5-star books: " << total.fiveStarBooks << "\n";
-    out << "Average price: " << avgPrice << "\n";
-    out << "Books with price greater than 50 pounds: " << total.priceOver50 << "\n";
-    out << "Books containing 'Poem' keyword: " << total.containsPoem << "\n";
-    out << "Most expensive book: " << total.maxPriceTitle << " (£" << total.maxPrice << ")\n";
+    // Parallel run (pipeline)
+    storage.reset();
+    std::cout << "Starting parallel pipeline run...\n";
+    Result parallel = runPipeline(urls, downloader, analyzer, storage, out);
+
+    // Serial run
+    storage.reset();
+    std::cout << "Starting serial run...\n";
+    Result serial = runSerial(urls, downloader, analyzer, storage, out);
+
     out.close();
 
-    std::cout << "Completed. Results saved to results.txt\n";
-    std::cout << "Pages downloaded: " << pages
-        << ", elapsed: " << seconds
-        << " s, throughput: " << throughput << " pages/s\n";
+    std::cout << "\nParallel pipeline completed. Pages: " << parallel.pages
+        << ", elapsed: " << parallel.seconds
+        << " s, throughput: " << parallel.throughput << " pages/s\n";
 
+    std::cout << "\nSerial completed. Pages: " << serial.pages
+        << ", elapsed: " << serial.seconds
+        << " s, throughput: " << serial.throughput << " pages/s\n";
+
+    // Export CSV with all books
+    auto allBooks = storage.snapshotRecords();
+    std::ofstream csv("books.csv");
+    csv << "title,price,rating\n";
+    for (auto& b : allBooks) {
+        std::string t = b.title;
+        size_t p = 0;
+        while ((p = t.find('"', p)) != std::string::npos) {
+            t.replace(p, 1, "\"\"");
+            p += 2;
+        }
+        csv << "\"" << t << "\"," << b.price << "," << b.rating << "\n";
+    }
+    csv.close();
+
+    curl_global_cleanup();
     return 0;
 }

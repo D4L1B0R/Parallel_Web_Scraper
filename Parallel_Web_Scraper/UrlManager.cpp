@@ -1,6 +1,7 @@
 #include "UrlManager.hpp"
 #include <fstream>
 #include <iostream>
+#include <regex>
 
 void UrlManager::addUrl(const std::string& url) {
     // mark visited & push only if not existed
@@ -46,4 +47,24 @@ bool UrlManager::markVisitedIfNew(const std::string& url) {
 
 size_t UrlManager::uniqueCount() const {
     return visited.size();
+}
+
+std::vector<std::string> UrlManager::crawlIndex(const std::string& indexHtml, const std::string& baseUrl) const {
+    // baseUrl like "https://books.toscrape.com/catalogue/"
+    std::vector<std::string> out;
+    // find links to /catalogue/page-N.html or similar
+    std::string htmlOne = indexHtml;
+    std::replace(htmlOne.begin(), htmlOne.end(), '\n', ' ');
+    std::regex linkRe("(?:href|HREF)\\s*=\\s*\"(/catalogue/page-[0-9]+\\.html)\"");
+        std::sregex_iterator it(htmlOne.begin(), htmlOne.end(), linkRe), end;
+    std::unordered_set<std::string> uniq;
+    for (; it != end; ++it) {
+        std::string rel = (*it)[1].str(); // like /catalogue/page-2.html
+        // build absolute
+        std::string abs = "https://books.toscrape.com" + rel;
+        if (uniq.insert(abs).second) out.push_back(abs);
+    }
+    // sort to deterministic order
+    std::sort(out.begin(), out.end());
+    return out;
 }
