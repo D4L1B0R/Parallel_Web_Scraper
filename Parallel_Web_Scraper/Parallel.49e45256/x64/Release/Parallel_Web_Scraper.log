@@ -1,8 +1,0 @@
-﻿C:\Users\dalen\Desktop\S4\Paralelno programiranje\Projekat\Parallel_Web_Scraper\Parallel_Web_Scraper\main.cpp(95,9): : warning : unknown pragma ignored [-Wunknown-pragmas]
-     95 | #pragma intel advisor begin ParallelPipeline
-        |         ^
-C:\Users\dalen\Desktop\S4\Paralelno programiranje\Projekat\Parallel_Web_Scraper\Parallel_Web_Scraper\main.cpp(134,9): : warning : unknown pragma ignored [-Wunknown-pragmas]
-    134 | #pragma intel advisor end ParallelPipeline
-        |         ^
-  2 warnings generated.
-  Parallel_Web_Scraper.vcxproj -> C:\Users\dalen\Desktop\S4\Paralelno programiranje\Projekat\Parallel_Web_Scraper\Parallel_Web_Scraper\x64\Release\ParallelWebScraper.exe
