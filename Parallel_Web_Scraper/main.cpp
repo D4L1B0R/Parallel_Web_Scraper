@@ -83,10 +83,14 @@ Result runPipeline(const std::vector<std::string>& urls,
     Downloader& downloader,
     Analyzer& analyzer,
     Storage& storage,
-    std::ostream& out) {
+    std::ostream& out)
+{
     auto start = std::chrono::steady_clock::now();
 
     const size_t maxTokens = 8;
+
+    #pragma intel advisor begin ParallelPipeline
+
     tbb::parallel_pipeline(
         maxTokens,
         tbb::make_filter<void, std::string>(
@@ -104,13 +108,6 @@ Result runPipeline(const std::vector<std::string>& urls,
             tbb::filter_mode::parallel,
             [&downloader](const std::string& url) -> std::string {
                 std::string page = downloader.downloadPage(url);
-                if (page.empty()) {
-                    std::cerr << "[pipeline] Failed to download: " << url << "\n";
-                }
-                else {
-                    std::cout << "[pipeline] Downloaded " << url
-                        << " (length=" << page.size() << ")\n";
-                }
                 return page;
             })
         &
@@ -130,6 +127,8 @@ Result runPipeline(const std::vector<std::string>& urls,
                 storage.incrementPagesProcessed();
             })
     );
+    
+    #pragma intel advisor end ParallelPipeline
 
     auto end = std::chrono::steady_clock::now();
     double seconds = std::chrono::duration<double>(end - start).count();
@@ -241,6 +240,28 @@ int main(int argc, char** argv) {
         csv << "\"" << t << "\"," << b.price << "," << b.rating << "\n";
     }
     csv.close();
+
+    if (parallel.result.bookCount != serial.result.bookCount ||
+        parallel.result.fiveStarBooks != serial.result.fiveStarBooks ||
+        parallel.result.containsPoem != serial.result.containsPoem ||
+        std::abs(parallel.result.totalPrice - serial.result.totalPrice) > 1e-6 ||
+        parallel.result.priceOver50 != serial.result.priceOver50)
+    {
+        std::cerr << "[main] Warning: Results differ between pipeline and serial!\n";
+    }
+    else {
+        std::cout << "[main] Results are consistent (pipeline == serial).\n";
+    }
+
+    double speedup = serial.seconds / (parallel.seconds > 0 ? parallel.seconds : 1);
+    double efficiency = (threads > 0 ? speedup / threads : speedup);
+
+    std::cout << "\nPerformance summary:\n";
+    std::cout << "----------------------\n";
+    std::cout << "Speedup: " << speedup << "x\n";
+    if (threads > 0) {
+        std::cout << "Efficiency: " << (efficiency * 100.0) << "% (relative to " << threads << " threads)\n";
+    }
 
     curl_global_cleanup();
     return 0;

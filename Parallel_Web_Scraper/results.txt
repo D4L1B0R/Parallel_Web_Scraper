@@ -1,29 +1,29 @@
 Parallel Pipeline Results
 ============================
-Pages downloaded: 5
-Unique URLs (visited): 5
-Elapsed time (s): 1.56487
-Throughput (pages/sec): 3.19515 pages/s
+Pages downloaded: 10
+Unique URLs (visited): 10
+Elapsed time (s): 1.68145
+Throughput (pages/sec): 5.94726 pages/s
 
 Analysis summary (aggregated):
-Total books found (aggregate count): 100
-Number of 5-star books: 19
-Average price: 33.1666
-Books with price greater than 50 pounds: 15
-Books containing 'Poem' keyword: 0
+Total books found (aggregate count): 200
+Number of 5-star books: 39
+Average price: 32.038
+Books with price greater than 50 pounds: 26
+Books containing 'Poem' keyword: 2
 Most expensive book: Last One Home (New Beginnings #1) (£59.98)
 
 Serial Web Scraper Results
 ==========================
-Pages downloaded: 5
-Unique URLs (visited): 5
-Elapsed time (s): 5.41617
-Throughput (pages/sec): 0.923161 pages/s
+Pages downloaded: 10
+Unique URLs (visited): 10
+Elapsed time (s): 7.25651
+Throughput (pages/sec): 1.37807 pages/s
 
 Analysis summary (aggregated):
-Total books found (aggregate count): 100
-Number of 5-star books: 19
-Average price: 33.1666
-Books with price greater than 50 pounds: 15
-Books containing 'Poem' keyword: 0
+Total books found (aggregate count): 200
+Number of 5-star books: 39
+Average price: 32.038
+Books with price greater than 50 pounds: 26
+Books containing 'Poem' keyword: 2
 Most expensive book: Last One Home (New Beginnings #1) (£59.98)
