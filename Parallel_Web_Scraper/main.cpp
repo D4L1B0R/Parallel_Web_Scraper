@@ -1,4 +1,8 @@
-﻿#include "Downloader.hpp"
+﻿// Project: Parallel Web Scraper
+// Name of an author: Nikolić Dalibor SV13-2023
+// Date and time of the last changes: 16.09.2025. 10:09
+
+#include "Downloader.hpp"
 #include "Analyzer.hpp"
 #include "Storage.hpp"
 #include "UrlManager.hpp"
@@ -83,13 +87,12 @@ Result runPipeline(const std::vector<std::string>& urls,
     Downloader& downloader,
     Analyzer& analyzer,
     Storage& storage,
-    std::ostream& out)
+    std::ostream& out,
+    size_t maxTokens)
 {
     auto start = std::chrono::steady_clock::now();
 
-    const size_t maxTokens = 8;
-
-    #pragma intel advisor begin ParallelPipeline
+#pragma intel advisor begin ParallelPipeline
 
     tbb::parallel_pipeline(
         maxTokens,
@@ -99,7 +102,7 @@ Result runPipeline(const std::vector<std::string>& urls,
                 static size_t idx = 0;
                 if (idx >= urls.size()) {
                     fc.stop();
-                    return std::string();
+                    return {};
                 }
                 return urls[idx++];
             })
@@ -107,32 +110,33 @@ Result runPipeline(const std::vector<std::string>& urls,
         tbb::make_filter<std::string, std::string>(
             tbb::filter_mode::parallel,
             [&downloader](const std::string& url) -> std::string {
-                std::string page = downloader.downloadPage(url);
-                return page;
+                return downloader.downloadPage(url);
             })
         &
         tbb::make_filter<std::string, std::pair<std::vector<BookRecord>, AnalysisResult>>(
             tbb::filter_mode::parallel,
             [&analyzer](const std::string& page) {
-                if (page.empty()) return std::pair<std::vector<BookRecord>, AnalysisResult>{};
+                if (page.empty())
+                    return std::pair<std::vector<BookRecord>, AnalysisResult>{};
                 return analyzer.parsePageRecords(page);
             })
         &
         tbb::make_filter<std::pair<std::vector<BookRecord>, AnalysisResult>, void>(
             tbb::filter_mode::parallel,
-            [&storage](const std::pair<std::vector<BookRecord>, AnalysisResult>& pr) {
+            [&storage](const auto& pr) {
                 if (pr.first.empty() && pr.second.bookCount == 0) return;
-                storage.storeRecords(pr.first);
                 storage.storeResult(pr.second);
+                storage.storeRecords(pr.first);
                 storage.incrementPagesProcessed();
             })
     );
-    
-    #pragma intel advisor end ParallelPipeline
+
+#pragma intel advisor end ParallelPipeline
 
     auto end = std::chrono::steady_clock::now();
     double seconds = std::chrono::duration<double>(end - start).count();
     int pages = storage.pagesProcessed();
+
     AnalysisResult total = storage.getAggregatedResult();
     double avgPrice = (total.bookCount ? total.totalPrice / total.bookCount : 0.0);
     double throughput = (seconds > 0.0 ? pages / seconds : pages);
@@ -157,6 +161,7 @@ Result runPipeline(const std::vector<std::string>& urls,
 
 // ------------------ Main -------------------
 int main(int argc, char** argv) {
+
     curl_global_init(CURL_GLOBAL_DEFAULT);
 
     int threads = 0;
@@ -206,10 +211,17 @@ int main(int argc, char** argv) {
 
     std::ofstream out("results.txt");
 
+    out << "Processed URLs:\n";
+    for (const auto& u : urls) {
+        out << u << "\n";
+    }
+    out << "\n============================\n\n";
+
     // Parallel run (pipeline)
     storage.reset();
     std::cout << "Starting parallel pipeline run...\n";
-    Result parallel = runPipeline(urls, downloader, analyzer, storage, out);
+    Result parallel = runPipeline(urls, downloader, analyzer, storage, out,
+        threads > 0 ? threads : std::thread::hardware_concurrency());
 
     // Serial run
     storage.reset();

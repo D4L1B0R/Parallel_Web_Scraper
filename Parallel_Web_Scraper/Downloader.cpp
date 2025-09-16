@@ -1,3 +1,7 @@
+﻿// Project: Parallel Web Scraper
+// Name of an author: Nikolić Dalibor SV13-2023
+// Date and time of the last changes: 16.09.2025. 10:11
+
 #include "Downloader.hpp"
 #include <curl/curl.h>
 #include <stdexcept>
@@ -41,6 +45,10 @@ std::string Downloader::downloadPage(const std::string& url) {
 			return buffer; // successfull download
         }
         else {
+            if (response_code >= 400 && response_code < 500) { // client error — don't retry
+                break;
+            }
+
             std::cerr << "[Downloader] attempt " << attempt
                 << " failed for " << url
                 << " (curl=" << curl_easy_strerror(res)

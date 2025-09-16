@@ -1,9 +1,23 @@
+Processed URLs:
+https://books.toscrape.com/catalogue/page-2.html
+https://books.toscrape.com/catalogue/page-5.html
+https://books.toscrape.com/catalogue/page-9.html
+https://books.toscrape.com/catalogue/page-13.html
+https://books.toscrape.com/catalogue/page-17.html
+https://books.toscrape.com/catalogue/page-21.html
+https://books.toscrape.com/catalogue/page-26.html
+https://books.toscrape.com/catalogue/page-31.html
+https://books.toscrape.com/catalogue/page-37.html
+https://books.toscrape.com/catalogue/page-44.html
+
+============================
+
 Parallel Pipeline Results
 ============================
 Pages downloaded: 10
 Unique URLs (visited): 10
-Elapsed time (s): 1.68145
-Throughput (pages/sec): 5.94726 pages/s
+Elapsed time (s): 1.65566
+Throughput (pages/sec): 6.03988 pages/s
 
 Analysis summary (aggregated):
 Total books found (aggregate count): 200
@@ -17,8 +31,8 @@ Serial Web Scraper Results
 ==========================
 Pages downloaded: 10
 Unique URLs (visited): 10
-Elapsed time (s): 7.25651
-Throughput (pages/sec): 1.37807 pages/s
+Elapsed time (s): 7.21202
+Throughput (pages/sec): 1.38657 pages/s
 
 Analysis summary (aggregated):
 Total books found (aggregate count): 200

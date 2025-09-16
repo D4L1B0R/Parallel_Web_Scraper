@@ -1,3 +1,7 @@
+ï»¿// Project: Parallel Web Scraper
+// Name of an author: NikoliÄ‡ Dalibor SV13-2023
+// Date and time of the last changes: 16.09.2025. 09:53
+
 #include "Analyzer.hpp"
 #include <regex>
 #include <algorithm>
@@ -26,13 +30,34 @@ static int ratingStringToInt(const std::string& r) {
     return 0;
 }
 
+static std::string codepointToUtf8(int cp) {
+    std::string out;
+    if (cp <= 0x7F) out.push_back((char)cp);
+    else if (cp <= 0x7FF) {
+        out.push_back((char)(0xC0 | (cp >> 6)));
+        out.push_back((char)(0x80 | (cp & 0x3F)));
+    }
+    else if (cp <= 0xFFFF) {
+        out.push_back((char)(0xE0 | (cp >> 12)));
+        out.push_back((char)(0x80 | ((cp >> 6) & 0x3F)));
+        out.push_back((char)(0x80 | (cp & 0x3F)));
+    }
+    else {
+        out.push_back((char)(0xF0 | (cp >> 18)));
+        out.push_back((char)(0x80 | ((cp >> 12) & 0x3F)));
+        out.push_back((char)(0x80 | ((cp >> 6) & 0x3F)));
+        out.push_back((char)(0x80 | (cp & 0x3F)));
+    }
+    return out;
+}
+
 static std::string decodeHtmlEntities(const std::string& text) {
     std::string result = text;
     static const std::unordered_map<std::string, char> entities = {
         {"&quot;", '"'}, {"&apos;", '\''}, {"&amp;", '&'},
         {"&lt;", '<'}, {"&gt;", '>'}, {"&nbsp;", ' '},
         {"&#39;", '\''}, {"&rsquo;", '\''}, {"&ldquo;", '"'},
-        {"&rdquo;", '"'}, {"&hellip;", '…'}
+        {"&rdquo;", '"'}, {"&hellip;", 'â€¦'}
     };
     for (auto it = entities.begin(); it != entities.end(); ++it) {
         const std::string& entity = it->first;
@@ -47,8 +72,8 @@ static std::string decodeHtmlEntities(const std::string& text) {
     std::smatch m;
     while (std::regex_search(result, m, decimalEntityRe)) {
         int code = std::stoi(m[1].str());
-        char c = (code >= 0 && code <= 127) ? static_cast<char>(code) : '?';
-        result.replace(m.position(0), m.length(0), 1, c);
+        std::string utf8 = codepointToUtf8(code);
+        result.replace(m.position(0), m.length(0), utf8);
     }
     return result;
 }
@@ -67,7 +92,7 @@ std::pair<std::vector<BookRecord>, AnalysisResult> Analyzer::parsePageRecords(co
     std::sregex_iterator end;
 
     std::regex titleRe("title=\"([^\"]+)\"", std::regex::icase);
-        std::regex priceRe(R"(£([0-9]+(?:\.[0-9]{2})))", std::regex::icase);
+        std::regex priceRe(R"(Â£([0-9]+(?:\.[0-9]{2})))", std::regex::icase);
     std::regex ratingRe(R"(star-rating\s+([A-Za-z]+))", std::regex::icase);
 
     for (; it != end; ++it) {
@@ -109,7 +134,7 @@ std::pair<std::vector<BookRecord>, AnalysisResult> Analyzer::parsePageRecords(co
         }
 
         records.push_back(std::move(br));
-        std::cout << "[Analyzer] Book: " << records.back().title << " £" << price << " rating=" << rating << "\n";
+        std::cout << "[Analyzer] Book: " << records.back().title << " Â£" << price << " rating=" << rating << "\n";
     }
 
     return { std::move(records), res };
