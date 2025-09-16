@@ -1,6 +1,6 @@
 ﻿// Project: Parallel Web Scraper
 // Name of an author: Nikolić Dalibor SV13-2023
-// Date and time of the last changes: 16.09.2025. 09:53
+// Date and time of the last changes: 16.09.2025. 12:53
 
 #include "Analyzer.hpp"
 #include <regex>
@@ -53,19 +53,27 @@ static std::string codepointToUtf8(int cp) {
 
 static std::string decodeHtmlEntities(const std::string& text) {
     std::string result = text;
-    static const std::unordered_map<std::string, char> entities = {
-        {"&quot;", '"'}, {"&apos;", '\''}, {"&amp;", '&'},
-        {"&lt;", '<'}, {"&gt;", '>'}, {"&nbsp;", ' '},
-        {"&#39;", '\''}, {"&rsquo;", '\''}, {"&ldquo;", '"'},
-        {"&rdquo;", '"'}, {"&hellip;", '…'}
-    };
+    static std::unordered_map<std::string, std::string> entities;
+    if (entities.empty()) {
+        entities["&quot;"] = "\"";
+        entities["&apos;"] = "'";
+        entities["&amp;"] = "&";
+        entities["&lt;"] = "<";
+        entities["&gt;"] = ">";
+        entities["&nbsp;"] = " ";
+        entities["&#39;"] = "'";
+        entities["&rsquo;"] = "'";
+        entities["&ldquo;"] = "\"";
+        entities["&rdquo;"] = "\"";
+        entities["&hellip;"] = "…";
+    }
     for (auto it = entities.begin(); it != entities.end(); ++it) {
         const std::string& entity = it->first;
-        char chr = it->second;
+        const std::string& chr = it->second;
         size_t pos = 0;
         while ((pos = result.find(entity, pos)) != std::string::npos) {
-            result.replace(pos, entity.size(), 1, chr);
-            ++pos;
+            result.replace(pos, entity.size(), chr);
+            pos += chr.size();
         }
     }
     std::regex decimalEntityRe("&#([0-9]+);");
@@ -75,6 +83,14 @@ static std::string decodeHtmlEntities(const std::string& text) {
         std::string utf8 = codepointToUtf8(code);
         result.replace(m.position(0), m.length(0), utf8);
     }
+
+    std::regex hexEntityRe("&#x([0-9A-Fa-f]+);");
+    while (std::regex_search(result, m, hexEntityRe)) {
+        int code = std::stoi(m[1].str(), nullptr, 16);
+        std::string utf8 = codepointToUtf8(code);
+        result.replace(m.position(0), m.length(0), utf8);
+    }
+
     return result;
 }
 

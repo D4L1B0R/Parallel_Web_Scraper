@@ -1,0 +1,4 @@
+﻿C:\Users\dalen\Desktop\S4\Paralelno programiranje\Projekat\Parallel_Web_Scraper\Parallel_Web_Scraper\Analyzer.cpp(60,40): : error : character too large for enclosing character literal type
+     60 |         {"&rdquo;", '"'}, {"&hellip;", 'ΓÇª'}
+        |                                        ^
+  1 error generated.

@@ -1,14 +1,23 @@
 ﻿// Project: Parallel Web Scraper
 // Name of an author: Nikolić Dalibor SV13-2023
-// Date and time of the last changes: 16.09.2025. 09:09
+// Date and time of the last changes: 16.09.2025. 11:09
 
 #include "UrlManager.hpp"
 #include <fstream>
 #include <iostream>
 #include <regex>
+#include <mutex>
+
+std::mutex mu;
 
 void UrlManager::addUrl(const std::string& url) {
     // mark visited & push only if not existed
+    std::lock_guard<std::mutex> lock(mu);
+    static const std::regex urlRe(R"(^https?://[^\s/$.?#].[^\s]*$)");
+    if (!std::regex_match(url, urlRe)) {
+        std::cerr << "[UrlManager] Invalid URL: " << url << "\n";
+        return;
+    }
     if (visited.insert(url).second) {
         urls.push_back(url);
     }

@@ -44,20 +44,25 @@ std::string Downloader::downloadPage(const std::string& url) {
             curl_easy_cleanup(curl);
 			return buffer; // successfull download
         }
-        else {
-            if (response_code >= 400 && response_code < 500) { // client error — don't retry
-                break;
-            }
-
-            std::cerr << "[Downloader] attempt " << attempt
-                << " failed for " << url
-                << " (curl=" << curl_easy_strerror(res)
-                << ", http=" << response_code << ")\n";
-
-            // exponencial backoff: 200ms * 2^(attempt-1)
-            std::this_thread::sleep_for(
-                std::chrono::milliseconds(200 * (1 << (attempt - 1))));
+        else if (response_code == 429) {
+            char* retry_after = nullptr;
+            curl_easy_getinfo(curl, CURLINFO_RETRY_AFTER, &retry_after);
+            int wait = retry_after ? atoi(retry_after) : (1 << (attempt - 1));
+            std::this_thread::sleep_for(std::chrono::seconds(wait));
+            continue;
         }
+        else if (response_code >= 400 && response_code < 500) { // client error — don't retry
+            break;
+        }
+
+        std::cerr << "[Downloader] attempt " << attempt
+            << " failed for " << url
+            << " (curl=" << curl_easy_strerror(res)
+            << ", http=" << response_code << ")\n";
+
+        // exponencial backoff: 200ms * 2^(attempt-1)
+        std::this_thread::sleep_for(
+            std::chrono::milliseconds(200 * (1 << (attempt - 1))));
     }
 
     curl_easy_cleanup(curl);
