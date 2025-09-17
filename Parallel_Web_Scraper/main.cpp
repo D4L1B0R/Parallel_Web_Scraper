@@ -73,7 +73,7 @@ Result runSerial(const std::vector<std::string>& urls,
     out << "Analysis summary (aggregated):\n";
     out << "Total books found (aggregate count): " << total.bookCount << "\n";
     out << "Number of 5-star books: " << total.fiveStarBooks << "\n";
-    out << "Average price: " << avgPrice << "\n";
+    out << "Average price: " << "£" << avgPrice << "\n";
     out << "Books with price greater than 50 pounds: " << total.priceOver50 << "\n";
     out << "Books containing 'Poem' keyword: " << total.containsPoem << "\n";
     out << "Most expensive book: " << total.maxPriceTitle
@@ -150,7 +150,7 @@ Result runPipeline(const std::vector<std::string>& urls,
     out << "Analysis summary (aggregated):\n";
     out << "Total books found (aggregate count): " << total.bookCount << "\n";
     out << "Number of 5-star books: " << total.fiveStarBooks << "\n";
-    out << "Average price: " << avgPrice << "\n";
+    out << "Average price: " << "£" << avgPrice << "\n";
     out << "Books with price greater than 50 pounds: " << total.priceOver50 << "\n";
     out << "Books containing 'Poem' keyword: " << total.containsPoem << "\n";
     out << "Most expensive book: " << total.maxPriceTitle
@@ -172,7 +172,7 @@ int main(int argc, char** argv) {
         if ((a == "-t" || a == "--threads") && i + 1 < argc) {
             threads = std::stoi(argv[++i]);
         }
-        if ((a == "--c" || a == "--crawl") && i + 1 < argc) {
+        if ((a == "-c" || a == "--crawl") && i + 1 < argc) {
             doCrawl = true;
             pagesCrawl = std::stoi(argv[++i]);
         }
@@ -191,9 +191,8 @@ int main(int argc, char** argv) {
 
     if (doCrawl) {
         std::cout << "[main] Crawling catalogue pages...\n";
-        auto pages = urlManager.crawlIndex(downloader, "https://books.toscrape.com/catalogue/", pagesCrawl);
-        for (auto& p : pages) urlManager.addUrl(p);
-        std::cout << "[main] Crawl found " << pages.size() << " catalogue pages.\n";
+        int pagesNumber = urlManager.crawlIndex(downloader, "https://books.toscrape.com/catalogue/", pagesCrawl);
+        std::cout << "[main] Crawl found " << pagesNumber << " catalogue pages.\n";
     }
 
     auto urls = urlManager.getUrlsSnapshot();

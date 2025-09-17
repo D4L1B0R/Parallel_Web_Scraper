@@ -3,18 +3,13 @@
 // Date and time of the last changes: 16.09.2025. 11:09
 
 #include "UrlManager.hpp"
-#include <tbb/concurrent_vector.h>
 #include <tbb/parallel_for.h>
 #include <fstream>
 #include <iostream>
 #include <regex>
 #include <mutex>
 
-std::mutex mu;
-
 void UrlManager::addUrl(const std::string& url) {
-    // mark visited & push only if not existed
-    std::lock_guard<std::mutex> lock(mu);
     static const std::regex urlRe(R"(^https?://[^\s/$.?#].[^\s]*$)");
     if (!std::regex_match(url, urlRe)) {
         std::cerr << "[UrlManager] Invalid URL: " << url << "\n";
@@ -64,23 +59,18 @@ size_t UrlManager::uniqueCount() const {
     return visited.size();
 }
 
-std::vector<std::string> UrlManager::crawlIndex(Downloader& downloader, const std::string& baseUrl, int maxPages) const {
-    // baseUrl: "https://books.toscrape.com/catalogue/"
-    tbb::concurrent_vector<std::string> results;
+int UrlManager::crawlIndex(Downloader& downloader, const std::string& baseUrl, int maxPages) {
+    std::atomic<int> num{ 0 };
+    addUrl(baseUrl + "page-1.html");  // Page-1
 
-    // first starts from page-1
-    results.push_back(baseUrl + "page-1.html");
-
-    // parallel searching for next page, starting from page-1
     tbb::parallel_for(2, maxPages + 1, [&](int i) {
         std::string url = baseUrl + "page-" + std::to_string(i) + ".html";
         std::string html = downloader.downloadPage(url);
         if (!html.empty()) {
-            results.push_back(url);
+            addUrl(url);
+            ++num;
         }
         });
 
-    std::vector<std::string> out(results.begin(), results.end());
-    std::sort(out.begin(), out.end());
-    return out;
+    return num;
 }

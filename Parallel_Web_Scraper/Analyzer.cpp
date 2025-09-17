@@ -58,6 +58,7 @@ static std::string decodeHtmlEntities(const std::string& text) {
         entities["&quot;"] = "\"";
         entities["&apos;"] = "'";
         entities["&amp;"] = "&";
+        entities["&pound;"] = "£";
         entities["&lt;"] = "<";
         entities["&gt;"] = ">";
         entities["&nbsp;"] = " ";
@@ -102,13 +103,12 @@ std::pair<std::vector<BookRecord>, AnalysisResult> Analyzer::parsePageRecords(co
 
     std::string htmlOneLine = html;
     std::replace(htmlOneLine.begin(), htmlOneLine.end(), '\n', ' ');
-    // dotall not available portably, we removed newlines above
     std::regex articleRe(R"(<article[^>]*class="[^"]*product_pod[^"]*"[^>]*>.*?</article>)", std::regex::icase);
     std::sregex_iterator it(htmlOneLine.begin(), htmlOneLine.end(), articleRe);
     std::sregex_iterator end;
 
     std::regex titleRe("title=\"([^\"]+)\"", std::regex::icase);
-        std::regex priceRe(R"(£([0-9]+(?:\.[0-9]{2})))", std::regex::icase);
+    std::regex priceRe(R"((?:£|\xC2\xA3)([0-9]+(?:\.[0-9]{2})))", std::regex::icase);
     std::regex ratingRe(R"(star-rating\s+([A-Za-z]+))", std::regex::icase);
 
     for (; it != end; ++it) {
@@ -150,7 +150,7 @@ std::pair<std::vector<BookRecord>, AnalysisResult> Analyzer::parsePageRecords(co
         }
 
         records.push_back(std::move(br));
-        std::cout << "[Analyzer] Book: " << records.back().title << " £" << price << " rating=" << rating << "\n";
+        std::cout << "[Analyzer] Book: " << records.back().title << price << " GBP" << " rating=" << rating << "\n";
     }
 
     return { std::move(records), res };

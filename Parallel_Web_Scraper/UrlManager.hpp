@@ -5,12 +5,13 @@
 #pragma once
 #include "Downloader.hpp"
 #include <string>
-#include <vector>
+#include <tbb/concurrent_vector.h>
+#include <tbb/concurrent_unordered_set.h>
 #include <unordered_set>
 
 class UrlManager {
-    std::vector<std::string> urls;
-    std::unordered_set<std::string> visited;
+    tbb::concurrent_vector<std::string> urls;
+    tbb::concurrent_unordered_set<std::string> visited;
 public:
     void addUrl(const std::string& url);
     size_t loadFromFile(const std::string& path);
@@ -19,5 +20,5 @@ public:
     bool markVisitedIfNew(const std::string& url);
     size_t uniqueCount() const;
     // crawl index page (synchronously, returns discovered urls)
-    std::vector<std::string> crawlIndex(Downloader& downloader, const std::string& baseUrl, int maxPages) const;
+    int crawlIndex(Downloader& downloader, const std::string& baseUrl, int maxPages);
 };
