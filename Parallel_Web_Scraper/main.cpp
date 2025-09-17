@@ -166,13 +166,15 @@ int main(int argc, char** argv) {
 
     int threads = 0;
     bool doCrawl = false;
+    int pagesCrawl = 0;
     for (int i = 1; i < argc; ++i) {
         std::string a(argv[i]);
         if ((a == "-t" || a == "--threads") && i + 1 < argc) {
             threads = std::stoi(argv[++i]);
         }
-        else if (a == "--crawl") {
+        if ((a == "--c" || a == "--crawl") && i + 1 < argc) {
             doCrawl = true;
+            pagesCrawl = std::stoi(argv[++i]);
         }
     }
 
@@ -188,13 +190,10 @@ int main(int argc, char** argv) {
     Storage storage;
 
     if (doCrawl) {
-        std::cout << "[main] Crawling index page...\n";
-        std::string indexHtml = downloader.downloadPage("https://books.toscrape.com/index.html");
-        if (!indexHtml.empty()) {
-            auto pages = urlManager.crawlIndex(indexHtml, "https://books.toscrape.com");
-            for (auto& p : pages) urlManager.addUrl(p);
-            std::cout << "[main] Crawl found " << pages.size() << " catalogue pages.\n";
-        }
+        std::cout << "[main] Crawling catalogue pages...\n";
+        auto pages = urlManager.crawlIndex(downloader, "https://books.toscrape.com/catalogue/", pagesCrawl);
+        for (auto& p : pages) urlManager.addUrl(p);
+        std::cout << "[main] Crawl found " << pages.size() << " catalogue pages.\n";
     }
 
     auto urls = urlManager.getUrlsSnapshot();

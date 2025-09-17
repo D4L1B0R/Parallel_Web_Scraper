@@ -3,6 +3,8 @@
 // Date and time of the last changes: 16.09.2025. 11:09
 
 #include "UrlManager.hpp"
+#include <tbb/concurrent_vector.h>
+#include <tbb/parallel_for.h>
 #include <fstream>
 #include <iostream>
 #include <regex>
@@ -62,22 +64,23 @@ size_t UrlManager::uniqueCount() const {
     return visited.size();
 }
 
-std::vector<std::string> UrlManager::crawlIndex(const std::string& indexHtml, const std::string& baseUrl) const {
-    // baseUrl like "https://books.toscrape.com/catalogue/"
-    std::vector<std::string> out;
-    // find links to /catalogue/page-N.html or similar
-    std::string htmlOne = indexHtml;
-    std::replace(htmlOne.begin(), htmlOne.end(), '\n', ' ');
-    std::regex linkRe("(?:href|HREF)\\s*=\\s*\"(/catalogue/page-[0-9]+\\.html)\"");
-        std::sregex_iterator it(htmlOne.begin(), htmlOne.end(), linkRe), end;
-    std::unordered_set<std::string> uniq;
-    for (; it != end; ++it) {
-        std::string rel = (*it)[1].str(); // like /catalogue/page-2.html
-        // build absolute
-        std::string abs = "https://books.toscrape.com" + rel;
-        if (uniq.insert(abs).second) out.push_back(abs);
-    }
-    // sort to deterministic order
+std::vector<std::string> UrlManager::crawlIndex(Downloader& downloader, const std::string& baseUrl, int maxPages) const {
+    // baseUrl: "https://books.toscrape.com/catalogue/"
+    tbb::concurrent_vector<std::string> results;
+
+    // first starts from page-1
+    results.push_back(baseUrl + "page-1.html");
+
+    // parallel searching for next page, starting from page-1
+    tbb::parallel_for(2, maxPages + 1, [&](int i) {
+        std::string url = baseUrl + "page-" + std::to_string(i) + ".html";
+        std::string html = downloader.downloadPage(url);
+        if (!html.empty()) {
+            results.push_back(url);
+        }
+        });
+
+    std::vector<std::string> out(results.begin(), results.end());
     std::sort(out.begin(), out.end());
     return out;
 }

@@ -1,5 +1,6 @@
 Processed URLs:
 https://books.toscrape.com/catalogue/page-1.html
+https://books.toscrape.com/catalogue/page-10.html
 https://books.toscrape.com/catalogue/page-2.html
 https://books.toscrape.com/catalogue/page-3.html
 https://books.toscrape.com/catalogue/page-4.html
@@ -8,66 +9,35 @@ https://books.toscrape.com/catalogue/page-6.html
 https://books.toscrape.com/catalogue/page-7.html
 https://books.toscrape.com/catalogue/page-8.html
 https://books.toscrape.com/catalogue/page-9.html
-https://books.toscrape.com/catalogue/page-10.html
-https://books.toscrape.com/catalogue/page-11.html
-https://books.toscrape.com/catalogue/page-12.html
-https://books.toscrape.com/catalogue/page-13.html
-https://books.toscrape.com/catalogue/page-14.html
-https://books.toscrape.com/catalogue/page-15.html
-https://books.toscrape.com/catalogue/page-16.html
-https://books.toscrape.com/catalogue/page-17.html
-https://books.toscrape.com/catalogue/page-18.html
-https://books.toscrape.com/catalogue/page-19.html
-https://books.toscrape.com/catalogue/page-20.html
-https://books.toscrape.com/catalogue/page-21.html
-https://books.toscrape.com/catalogue/page-22.html
-https://books.toscrape.com/catalogue/page-23.html
-https://books.toscrape.com/catalogue/page-24.html
-https://books.toscrape.com/catalogue/page-25.html
-https://books.toscrape.com/catalogue/page-26.html
-https://books.toscrape.com/catalogue/page-27.html
-https://books.toscrape.com/catalogue/page-28.html
-https://books.toscrape.com/catalogue/page-29.html
-https://books.toscrape.com/catalogue/page-30.html
-https://books.toscrape.com/catalogue/page-31.html
-https://books.toscrape.com/catalogue/page-32.html
-https://books.toscrape.com/catalogue/page-33.html
-https://books.toscrape.com/catalogue/page-34.html
-https://books.toscrape.com/catalogue/page-35.html
-https://books.toscrape.com/catalogue/page-36.html
-https://books.toscrape.com/catalogue/page-37.html
-https://books.toscrape.com/catalogue/page-38.html
-https://books.toscrape.com/catalogue/page-39.html
-https://books.toscrape.com/catalogue/page-40.html
 
 ============================
 
 Parallel Pipeline Results
 ============================
-Pages downloaded: 40
-Unique URLs (visited): 40
-Elapsed time (s): 7.94545
-Throughput (pages/sec): 5.03433 pages/s
+Pages downloaded: 10
+Unique URLs (visited): 10
+Elapsed time (s): 2.22079
+Throughput (pages/sec): 4.5029 pages/s
 
 Analysis summary (aggregated):
-Total books found (aggregate count): 800
-Number of 5-star books: 154
-Average price: 34.9189
-Books with price greater than 50 pounds: 156
-Books containing 'Poem' keyword: 10
-Most expensive book: The Perfect Play (Play by Play #1) (£59.99)
+Total books found (aggregate count): 200
+Number of 5-star books: 37
+Average price: 34.7963
+Books with price greater than 50 pounds: 41
+Books containing 'Poem' keyword: 5
+Most expensive book: Thomas Jefferson and the Tripoli Pirates: The Forgotten War That Changed American History (£59.64)
 
 Serial Web Scraper Results
 ==========================
-Pages downloaded: 40
-Unique URLs (visited): 40
-Elapsed time (s): 38.5378
-Throughput (pages/sec): 1.03794 pages/s
+Pages downloaded: 10
+Unique URLs (visited): 10
+Elapsed time (s): 11.1065
+Throughput (pages/sec): 0.900374 pages/s
 
 Analysis summary (aggregated):
-Total books found (aggregate count): 800
-Number of 5-star books: 154
-Average price: 34.9189
-Books with price greater than 50 pounds: 156
-Books containing 'Poem' keyword: 10
-Most expensive book: The Perfect Play (Play by Play #1) (£59.99)
+Total books found (aggregate count): 200
+Number of 5-star books: 37
+Average price: 34.7963
+Books with price greater than 50 pounds: 41
+Books containing 'Poem' keyword: 5
+Most expensive book: Thomas Jefferson and the Tripoli Pirates: The Forgotten War That Changed American History (£59.64)
